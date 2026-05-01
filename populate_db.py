@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS album (
     albumId      VARCHAR(255) PRIMARY KEY,
     artistId     INT NOT NULL,
     title        VARCHAR(255),
-    genre        VARCHAR(255),
     release_year INT,
     FOREIGN KEY (artistId) REFERENCES artist(artistId) ON DELETE CASCADE
 );
@@ -102,9 +101,9 @@ def run():
             # --- album ---
             if album_id not in albums_seen:
                 cursor.execute(
-                    """INSERT IGNORE INTO album (albumId, artistId, title, genre, release_year)
-                       VALUES (%s, %s, %s, %s, %s)""",
-                    (album_id, artist_id, album_title, genre, get_year(release_date))
+                    """INSERT IGNORE INTO album (albumId, artistId, title, release_year)
+                       VALUES (%s, %s, %s, %s)""",
+                    (album_id, artist_id, album_title, get_year(release_date))
                 )
                 albums_seen.add(album_id)
 

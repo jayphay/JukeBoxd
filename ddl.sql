@@ -22,7 +22,6 @@ create table if not exists song (
 create table if not exists  album (
     albumId varchar(255) primary key,
     artistId int not null,
-    genre varchar(255),
     title varchar(255),
     release_year int,
     foreign key (artistId) references artist(artistId) on delete cascade

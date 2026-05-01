@@ -1,0 +1,3 @@
+To get all the songs/artists/albums, we used the Spotify kaggle dataset that can be found here: https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download
+
+We extracted that data using the populate_db.py script that's in the root of this file. It parses the whole csv file and extracts the attributes that we determined were appropriate for our project.
