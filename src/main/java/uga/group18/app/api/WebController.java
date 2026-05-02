@@ -22,6 +22,11 @@ public class WebController {
         return "index";
     }
 
+    @GetMapping("/profile")
+    public String profile() {
+        return "forward:/profile.html";
+    }
+
     @ModelAttribute("genres")
     public List<String> getGenres() {
         return jdbc.queryForList("SELECT DISTINCT genre FROM song WHERE genre IS NOT NULL", String.class);
