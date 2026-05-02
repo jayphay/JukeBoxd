@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+</head>
+<body>
+
+<header class="header" th:fragment="main-header">
+    <div class="wrap header__inner">
+        <div class="header__row">
+            <div class="brand">
+                <div class="brand__mark" aria-hidden="true">J</div>
+                <div class="brand__text">
+                    <div class="brand__title">Jukeboxd</div>
+                    <div class="brand__tagline">Discover what’s spinning now.</div>
+                </div>
+            </div>
+            <nav class="nav" aria-label="Primary">
+                <form class="header__search">
+                    <!-- Genre Dropdown -->
+                    <select name="genre" id="genre-filter" class="search-input search-input--select">
+                        <option value="">All Genres</option>
+                        <!-- thymeleaf loops through your database list here -->
+                        <option th:each="g : ${genres}" th:value="${g}" th:text="${g}"></option>
+                    </select>
+                </form>
+                <form id="song-search-form" class="search-form">
+                    <input type="search" name="query" class="search-input" placeholder="Search songs..." />
+                </form>
+                <form id="user-search-form" class="search-form">
+                    <input type="search" name="query" class="search-input" placeholder="Search users..." />
+                </form>
+                <a class="nav__link" href="/create-review.html">Create a review</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+</body>
+</html>
