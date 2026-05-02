@@ -16,7 +16,7 @@ public class HomeController {
         this.jdbc = jdbc;
     }
 
-    public record AlbumItem(String albumId, String title, String artistName, String genre, Integer releaseYear, Integer songsCount) {}
+    public record AlbumItem(String albumId, String title, String artistName, Integer releaseYear, Integer songsCount) {}
     public record SongItem(String songId, String title, String artistName, String albumTitle, String genre) {}
     public record ArtistItem(Integer artistId, String artistName, Integer songsCount, Integer albumsCount) {}
     public record ReviewItem(Integer userId, String username, String songId, String songTitle, String artistName, String comment, String rating) {}
@@ -29,13 +29,12 @@ public class HomeController {
                   a.albumId,
                   COALESCE(a.title, '') AS title,
                   ar.artist_name AS artistName,
-                  a.genre,
                   a.release_year AS releaseYear,
                   COUNT(s.songId) AS songsCount
                 FROM album a
                 JOIN artist ar ON ar.artistId = a.artistId
                 LEFT JOIN song s ON s.albumId = a.albumId
-                GROUP BY a.albumId, a.title, ar.artist_name, a.genre, a.release_year
+                GROUP BY a.albumId, a.title, ar.artist_name, a.release_year
                 ORDER BY songsCount DESC, a.release_year DESC, a.title ASC
                 LIMIT 10
                 """,
@@ -43,7 +42,6 @@ public class HomeController {
                         rs.getString("albumId"),
                         rs.getString("title"),
                         rs.getString("artistName"),
-                        rs.getString("genre"),
                         (Integer) rs.getObject("releaseYear"),
                         rs.getInt("songsCount")
                 )

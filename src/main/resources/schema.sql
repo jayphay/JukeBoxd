@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS album (
     albumId VARCHAR(255) PRIMARY KEY,
     artistId INT NOT NULL,
     title VARCHAR(255),
-    genre VARCHAR(255),
     release_year INT,
     FOREIGN KEY (artistId) REFERENCES artist(artistId) ON DELETE CASCADE
 );
