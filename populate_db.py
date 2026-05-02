@@ -36,6 +36,24 @@ CREATE TABLE IF NOT EXISTS song (
     FOREIGN KEY (artistId) REFERENCES artist(artistId) ON DELETE CASCADE,
     FOREIGN KEY (albumId)  REFERENCES album(albumId)   ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS user (
+    userId INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS review (
+    userId INT NOT NULL,
+    songId VARCHAR(255) NOT NULL,
+    comment TEXT NOT NULL,
+    rating ENUM('1', '2', '3', '4', '5'),
+    PRIMARY KEY (userId, songId),
+    FOREIGN KEY (songId) REFERENCES song(songId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES user(userId) ON DELETE CASCADE
+);
 """
 
 def get_year(date_str):
@@ -117,6 +135,41 @@ def run():
                 songs_seen.add(song_id)
 
     conn.commit()
+
+    # Seed a few demo users + reviews so "Recent reviews" has real DB data
+    demo_users = [
+        ("alex",  "pass", "Alex",  "Demo"),
+        ("priya", "pass", "Priya", "Demo"),
+        ("sam",   "pass", "Sam",   "Demo"),
+    ]
+    for username, password, first, last in demo_users:
+        cursor.execute(
+            "INSERT IGNORE INTO user (username, password, firstName, lastName) VALUES (%s, %s, %s, %s)",
+            (username, password, first, last),
+        )
+    conn.commit()
+
+    cursor.execute("SELECT userId, username FROM user WHERE username IN (%s, %s, %s)", ("alex", "priya", "sam"))
+    user_rows = cursor.fetchall()
+    user_ids = {u: uid for (uid, u) in user_rows}
+
+    cursor.execute("SELECT songId FROM song ORDER BY songId ASC LIMIT 3")
+    song_rows = cursor.fetchall()
+    song_ids = [r[0] for r in song_rows]
+
+    demo_reviews = [
+        (user_ids.get("alex"),  song_ids[0] if len(song_ids) > 0 else None, "Still feels futuristic — every hook lands.", "5"),
+        (user_ids.get("priya"), song_ids[1] if len(song_ids) > 1 else None, "Great range and replay value; a few tracks drag.", "4"),
+        (user_ids.get("sam"),   song_ids[2] if len(song_ids) > 2 else None, "Impossibly tight songwriting. No skips.", "5"),
+    ]
+    for uid, sid, comment, rating in demo_reviews:
+        if uid and sid:
+            cursor.execute(
+                "INSERT IGNORE INTO review (userId, songId, comment, rating) VALUES (%s, %s, %s, %s)",
+                (uid, sid, comment, rating),
+            )
+    conn.commit()
+
     cursor.close()
     conn.close()
 

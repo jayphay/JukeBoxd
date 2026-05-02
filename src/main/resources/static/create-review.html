@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create review • Jukeboxd</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="header">
+      <div class="wrap header__inner">
+        <div class="header__row">
+          <div class="brand">
+            <div class="brand__mark" aria-hidden="true">J</div>
+            <div class="brand__text">
+              <div class="brand__title">Jukeboxd</div>
+              <div class="brand__tagline">Create a review</div>
+            </div>
+          </div>
+          <nav class="nav" aria-label="Primary">
+            <a class="nav__link" href="/">Home</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="grid grid--single">
+        <section class="card card--wide">
+          <div class="card__head">
+            <h2>Create a review</h2>
+            <span class="pill">Draft</span>
+          </div>
+
+          <form id="review-form" class="form">
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label">Type</span>
+                <select class="field__input" name="type" required>
+                  <option value="Album" selected>Album</option>
+                  <option value="Single">Single</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span class="field__label">Title</span>
+                <input class="field__input" name="title" placeholder="e.g., Discovery" required />
+              </label>
+            </div>
+
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label">Artist</span>
+                <input class="field__input" name="artist" placeholder="e.g., Daft Punk" required />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Rating</span>
+                <select class="field__input" name="rating" required>
+                  <option value="★★★★★">★★★★★</option>
+                  <option value="★★★★☆" selected>★★★★☆</option>
+                  <option value="★★★☆☆">★★★☆☆</option>
+                  <option value="★★☆☆☆">★★☆☆☆</option>
+                  <option value="★☆☆☆☆">★☆☆☆☆</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field__label">Your name</span>
+              <input class="field__input" name="author" placeholder="e.g., alex" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Review</span>
+              <textarea
+                class="field__input field__textarea"
+                name="body"
+                rows="5"
+                placeholder="What did you think?"
+                required
+              ></textarea>
+            </label>
+
+            <div class="actions">
+              <button class="btn btn--primary" type="submit">Publish review</button>
+              <a class="btn btn--ghost" href="/">Cancel</a>
+            </div>
+
+            <p class="hint">
+              Saved locally in your browser for now (no backend endpoint yet).
+            </p>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <script src="/reviews.js" defer></script>
+    <script src="/create-review.js" defer></script>
+  </body>
+</html>
