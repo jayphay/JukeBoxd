@@ -5,36 +5,45 @@
 </head>
 <body>
 
-<header class="header" th:fragment="main-header">
-    <div class="wrap header__inner">
-        <div class="header__row">
-            <div class="brand">
-                <div class="brand__mark" aria-hidden="true">J</div>
-                <div class="brand__text">
-                    <div class="brand__title">Jukeboxd</div>
-                    <div class="brand__tagline">Discover what’s spinning now.</div>
+<div th:fragment="main-header">
+    <header class="header">
+        <div class="wrap header__inner">
+            <div class="header__row">
+                <div class="brand">
+                    <div class="brand__mark" aria-hidden="true">J</div>
+                    <div class="brand__text">
+                        <div class="brand__title">Jukeboxd</div>
+                        <div class="brand__tagline">Discover what’s spinning now.</div>
+                    </div>
                 </div>
+                <nav class="nav" aria-label="Primary">
+                    <form id="song-search-form" class="search-form" action="/api/home/search">
+                        <select name="genre" id="genre-filter" class="search-input search-input--select">
+                            <option value="">All Genres</option>
+                            <option th:each="g : ${genres}" th:value="${g}" th:text="${g}"></option>
+                        </select>
+                        <input type="search" name="query" class="search-input" placeholder="Search songs..." />
+                    </form>
+                    <form id="user-search-form" class="search-form">
+                        <input type="search" name="query" class="search-input" placeholder="Search users..." />
+                    </form>
+                    <a class="nav__link" href="/create-review.html">Create a review</a>
+                </nav>
             </div>
-            <nav class="nav" aria-label="Primary">
-                <form class="header__search">
-                    <!-- Genre Dropdown -->
-                    <select name="genre" id="genre-filter" class="search-input search-input--select">
-                        <option value="">All Genres</option>
-                        <!-- thymeleaf loops through your database list here -->
-                        <option th:each="g : ${genres}" th:value="${g}" th:text="${g}"></option>
-                    </select>
-                </form>
-                <form id="song-search-form" class="search-form">
-                    <input type="search" name="query" class="search-input" placeholder="Search songs..." />
-                </form>
-                <form id="user-search-form" class="search-form">
-                    <input type="search" name="query" class="search-input" placeholder="Search users..." />
-                </form>
-                <a class="nav__link" href="/create-review.html">Create a review</a>
-            </nav>
         </div>
+    </header>
+
+    <!-- Now this is INSIDE the fragment and will show up on your pages -->
+    <div class="separator-bottom">
+        <nav class="content-center">
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/listenlist">Listen List</a>
+            <a href="/albumview">Album View</a>
+            <a href="/songview">Song View</a>
+        </nav>
     </div>
-</header>
+</div>
 
 </body>
 </html>
