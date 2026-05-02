@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Listen List | Jukeboxd</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<!-- Pulls in your new header and sub-nav -->
+<div th:replace="~{fragments/header :: main-header}"></div>
+
+<main class="wrap">
+    <section class="card card--wide">
+        <div class="card__head">
+            <h2>My Listen List</h2>
+            <span class="pill">Save for later</span>
+        </div>
+
+        <!-- Loop through the list from Java -->
+        <div class="list" th:if="${not #lists.isEmpty(listenSongs)}">
+            <div class="row" th:each="song : ${listenSongs}">
+                <div class="row__left">
+                    <p class="row__title" th:text="${song.title}">Song Title</p>
+                    <p class="row__sub" th:text="${song.artistName}">Artist Name</p>
+                </div>
+                <div class="score">Saved</div>
+            </div>
+        </div>
+
+        <!-- Empty State if nothing is found -->
+        <div class="empty" th:if="${#lists.isEmpty(listenSongs)}">
+            <p class="empty__title">Your list is empty.</p>
+            <p class="empty__body">Go explore and add some tracks to your rotation!</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>
