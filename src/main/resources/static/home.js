@@ -7,23 +7,60 @@ const escapeHtml = (s) =>
     .replaceAll("'", "&#039;");
 
 const renderRows = (el, items, kindLabel) => {
-  el.innerHTML = items
-    .map((it) => {
-      const title = escapeHtml(it.title);
-      const subtitle = escapeHtml(it.subtitle ?? "");
-      const score = escapeHtml(it.score ?? "");
-      return `
-        <li class="row">
-          <div class="row__left">
-            <div class="row__title">${title}</div>
-            <div class="row__sub">${subtitle || kindLabel}</div>
-          </div>
-          ${score ? `<div class="score">${score}</div>` : ""}
-        </li>
-      `;
-    })
-    .join("");
+  if (!el) return;
+  el.innerHTML = items.map((it) => {
+    const isSong = kindLabel === "Single" || kindLabel === "Result" || kindLabel === "Search Result";
+    const savedClass = it.isSaved ? 'is-saved' : '';
+    const btnText = it.isSaved ? 'Saved' : '+ List'; // Shorter text
+
+    return `
+      <li class="row" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="row__left">
+          <div class="row__title">${escapeHtml(it.title)}</div>
+          <div class="row__sub">${escapeHtml(it.subtitle ?? "")}</div>
+        </div>
+        <div class="row__right">
+          ${isSong ? `
+            <button class="listen-toggle ${savedClass}" data-id="${it.songId}">
+              ${btnText}
+            </button>
+          ` : ""}
+        </div>
+      </li>
+    `;
+  }).join("");
 };
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.listen-toggle');
+  if (!btn) return;
+
+  e.preventDefault();
+  const songId = btn.getAttribute('data-id');
+  const isListenListPage = btn.getAttribute('data-page') === 'listenlist';
+
+  try {
+    const res = await fetch(`/api/home/listen-list/toggle?songId=${encodeURIComponent(songId)}`, {
+      method: 'POST'
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+
+      if (data.status === 'removed' && isListenListPage) {
+          // OPTION A: Remove the entire row from the list immediately
+          btn.closest('.row').style.opacity = '0';
+          setTimeout(() => btn.closest('.row').remove(), 300);
+      } else {
+          // OPTION B: Just toggle the button (for search/home pages)
+          const isAdded = data.status === 'added';
+          btn.innerText = isAdded ? 'SAVED' : '+ LIST';
+          btn.classList.toggle('is-saved', isAdded);
+      }
+    }
+  } catch (err) {
+    console.error("Error:", err);
+  }
+});
 
 const renderChips = (el, items) => {
   el.innerHTML = items
@@ -97,11 +134,11 @@ const popularAlbums = [
 ];
 
 const popularSingles = [
-  { title: "Bad Habit", subtitle: "Steve Lacy", score: "4.1" },
-  { title: "Kill Bill", subtitle: "SZA", score: "4.2" },
-  { title: "As It Was", subtitle: "Harry Styles", score: "3.9" },
-  { title: "Cruel Summer", subtitle: "Taylor Swift", score: "4.0" },
-  { title: "Paint The Town Red", subtitle: "Doja Cat", score: "3.8" },
+  { songId: "1", title: "Bad Habit", subtitle: "Steve Lacy", score: "4.1" },
+  { songId: "2", title: "Kill Bill", subtitle: "SZA", score: "4.2" },
+  { songId: "3", title: "As It Was", subtitle: "Harry Styles", score: "3.9" },
+  { songId: "4", title: "Cruel Summer", subtitle: "Taylor Swift", score: "4.0" },
+  { songId: "5", title: "Paint The Town Red", subtitle: "Doja Cat", score: "3.8" },
 ];
 
 const popularArtists = [
@@ -162,9 +199,11 @@ window.addEventListener("DOMContentLoaded", () => {
       if (singlesEl) {
         const rows = await fetchJson("/api/home/popular-singles");
         const items = rows.map((r) => ({
-          title: r.title || "(Untitled song)",
-          subtitle: `${r.artistName}${r.albumTitle ? ` • ${r.albumTitle}` : ""}`,
-          score: r.genre ? r.genre : "",
+          songId: r.songId,
+          title: r.title,
+          artistName: r.artistName,
+          genre: r.genre,
+          isSaved: r.isSaved // <--- Pass the boolean from Java to JS here
         }));
         renderRows(singlesEl, items, "Single");
       }

@@ -17,15 +17,16 @@
                     </div>
                 </div>
                 <nav class="nav" aria-label="Primary">
-                    <form id="song-search-form" class="search-form" action="/api/home/search">
-                        <select name="genre" id="genre-filter" class="search-input search-input--select">
+                    <form class="header__search" action="/search" method="GET">
+                        <select name="genre" class="search-input search-input--select">
                             <option value="">All Genres</option>
                             <option th:each="g : ${genres}" th:value="${g}" th:text="${g}"></option>
                         </select>
                         <input type="search" name="query" class="search-input" placeholder="Search songs..." />
+                        <button type="submit" style="display:none">Search</button>
                     </form>
-                    <form id="user-search-form" class="search-form">
-                        <input type="search" name="query" class="search-input" placeholder="Search users..." />
+                    <form id="user-search-form" class="search-form" action="/members" method="GET">
+                        <input type="search" name="username" class="search-input" placeholder="Search users..." />
                     </form>
                     <!-- Only show these links when logged in -->
                     <a th:if="${loggedIn}" class="nav__link" href="/create-review">Create a review</a>

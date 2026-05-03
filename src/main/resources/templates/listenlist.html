@@ -17,15 +17,23 @@
         </div>
 
         <!-- Loop through the list from Java -->
-        <div class="list" th:if="${not #lists.isEmpty(listenSongs)}">
-            <div class="row" th:each="song : ${listenSongs}">
+        <div class="list">
+            <!-- Loop through the listenSongs list sent by WebController -->
+            <div class="row" th:each="song : ${listenSongs}" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="row__left">
                     <p class="row__title" th:text="${song.title}">Song Title</p>
                     <p class="row__sub" th:text="${song.artistName}">Artist Name</p>
                 </div>
-                <div class="score">Saved</div>
+
+                <!-- The button starts as 'SAVED' because it's already in the list -->
+                <button class="listen-toggle is-saved"
+                        th:data-id="${song.songId}"
+                        data-page="listenlist">SAVED</button>
             </div>
         </div>
+
+        <!-- Load home.js to use the existing click listener -->
+        <script src="/home.js" defer></script>
 
         <!-- Empty State if nothing is found -->
         <div class="empty" th:if="${#lists.isEmpty(listenSongs)}">
