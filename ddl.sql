@@ -49,3 +49,8 @@ create table if not exists review (
     foreign key (songId) references song(songId) on delete cascade,
     foreign key (userId) references user(userId) on delete cascade
 );
+
+insert into user values (1, "dsmith", "$2a$10$0bdF8iScIvp2qvvaCSnKlO5o7KoqfzTltCcYi8Jvb2LSfh/NMy0hq", "Dean", "Smith"); -- dog
+insert into user values (2, "tom98", "$2a$10$ZYzDuH7WLvgf6NOSh2zMBO6ZguIO91aLqzN6WmdkqLaC7CGzHaNvG", "Tom", "Howard"); -- cat
+insert into user values (3, "pete", "$2a$10$klo6Ffk3EOfpOBfnJl1FDuU5e6uZX7x8RqHrTXxCXHFhzMMYAlqdm", "Peter", "Parker"); -- fish
+
