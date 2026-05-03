@@ -17,9 +17,10 @@
     <!-- Display users as Chips -->
     <div class="chips">
       <div class="chip" th:each="m : ${members}">
-        <a th:href="'/profile/' + ${m.username}" class="link">
+        <!-- Link format: /profile?user=username -->
+        <a th:href="@{/profile(user=${m.username})}" style="text-decoration: none; color: inherit;">
           <strong th:text="${m.username}">Username</strong>
-          <span th:text="${m.firstName + ' ' + m.lastName}">Real Name</span>
+          <span th:text="${m.firstName + ' ' + m.lastName}">Name</span>
         </a>
       </div>
     </div>

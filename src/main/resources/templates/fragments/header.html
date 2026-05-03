@@ -26,12 +26,7 @@
                         <button type="submit" style="display:none">Search</button>
                     </form>
                     <form id="user-search-form" class="search-form" action="/members" method="GET">
-                        <input
-                                type="search"
-                                name="username"
-                                class="search-input"
-                                placeholder="Search for friends..."
-                        />
+                        <input type="search" name="username" class="search-input" placeholder="Search users..." />
                     </form>
                     <!-- Only show these links when logged in -->
                     <a th:if="${loggedIn}" class="nav__link" href="/create-review">Create a review</a>

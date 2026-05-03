@@ -32,10 +32,18 @@ public class WebController {
     }
 
     @GetMapping("/profile")
-    public ModelAndView profile() {
+    public ModelAndView profile(@RequestParam(required = false) String user) {
         ModelAndView mv = new ModelAndView("profile");
-        User user = userService.getLoggedInUser();
-        mv.addObject("username", user != null ? user.getUsername() : null);
+
+        // 1. If a 'user' param exists in the URL (?user=alex), use that
+        // 2. Otherwise, fall back to the logged-in user
+        if (user != null && !user.isEmpty()) {
+            mv.addObject("username", user);
+        } else {
+            User loggedIn = userService.getLoggedInUser();
+            mv.addObject("username", loggedIn != null ? loggedIn.getUsername() : null);
+        }
+
         return mv;
     }
 
