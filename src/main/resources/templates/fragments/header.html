@@ -28,7 +28,7 @@
                         <input type="search" name="query" class="search-input" placeholder="Search users..." />
                     </form>
                     <!-- Only show these links when logged in -->
-                    <a th:if="${loggedIn}" class="nav__link" href="/create-review.html">Create a review</a>
+                    <a th:if="${loggedIn}" class="nav__link" href="/create-review">Create a review</a>
                     <a th:if="${loggedIn}" class="nav__link" href="/logout">Log out</a>
                     <!-- Show login link when not logged in -->
                     <a th:unless="${loggedIn}" class="nav__link" href="/login">Log in</a>

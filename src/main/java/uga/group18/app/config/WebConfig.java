@@ -25,6 +25,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 // Only protect these specific paths
-                .addPathPatterns("/profile", "/profile.html", "/create-review.html", "/logout");
+                .addPathPatterns("/profile", "/profile.html", "/create-review.html", "/create-review", "/logout");
     }
 }
