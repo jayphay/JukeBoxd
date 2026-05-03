@@ -11,6 +11,51 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .song-search-wrap { position: relative; }
+      .song-results {
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 4px;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 100;
+        display: none;
+        box-shadow: var(--shadow);
+      }
+      .song-results.open { display: block; }
+      .song-result-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        font-size: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+      .song-result-item:last-child { border-bottom: none; }
+      .song-result-item:hover { background: rgba(255,255,255,.06); }
+      .song-result-item__artist { font-size: 12px; color: var(--muted2); margin-top: 2px; }
+      .selected-song {
+        display: none;
+        padding: 10px 14px;
+        background: rgba(255,211,138,.08);
+        border: 1px solid rgba(255,211,138,.20);
+        border-radius: 10px;
+        font-size: 14px;
+        margin-top: 6px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .selected-song.visible { display: flex; }
+      .selected-song__clear {
+        cursor: pointer;
+        color: var(--muted2);
+        font-size: 12px;
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <div class="bg"></div>
@@ -49,16 +94,28 @@
             <span th:text="${errorMessage}"></span>
           </div>
 
-          <form class="form" method="post" action="/create-review">
+          <form class="form" method="post" action="/create-review" id="review-form">
+
+            <!-- Hidden field that actually gets submitted -->
+            <input type="hidden" name="songId" id="selected-song-id" required />
+
             <label class="field">
               <span class="field__label">Song</span>
-              <select class="field__input" name="songId" required>
-                <option value="">— Select a song —</option>
-                <option th:each="song : ${songs}"
-                        th:value="${song.songId}"
-                        th:text="${song.title + ' — ' + song.artistName}">
-                </option>
-              </select>
+              <div class="song-search-wrap">
+                <input
+                  class="field__input"
+                  type="text"
+                  id="song-search-input"
+                  placeholder="Search for a song..."
+                  autocomplete="off"
+                />
+                <div class="song-results" id="song-results"></div>
+              </div>
+              <!-- Shows the selected song with an option to clear it -->
+              <div class="selected-song" id="selected-song-display">
+                <span id="selected-song-label"></span>
+                <span class="selected-song__clear" id="clear-song">Change</span>
+              </div>
             </label>
 
             <label class="field">
@@ -92,5 +149,79 @@
         </section>
       </section>
     </main>
+
+    <script th:inline="javascript">
+      // All songs injected from the server
+      const ALL_SONGS = /*[[${songs}]]*/ [];
+    </script>
+    <script>
+      const searchInput   = document.getElementById('song-search-input');
+      const resultsBox    = document.getElementById('song-results');
+      const hiddenId      = document.getElementById('selected-song-id');
+      const display       = document.getElementById('selected-song-display');
+      const displayLabel  = document.getElementById('selected-song-label');
+      const clearBtn      = document.getElementById('clear-song');
+
+      const selectSong = (song) => {
+        hiddenId.value       = song.songId;
+        displayLabel.textContent = `${song.title} — ${song.artistName}`;
+        display.classList.add('visible');
+        searchInput.style.display = 'none';
+        resultsBox.classList.remove('open');
+      };
+
+      const clearSong = () => {
+        hiddenId.value = '';
+        display.classList.remove('visible');
+        searchInput.style.display = '';
+        searchInput.value = '';
+        searchInput.focus();
+      };
+
+      clearBtn.addEventListener('click', clearSong);
+
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) { resultsBox.classList.remove('open'); return; }
+
+        const matches = ALL_SONGS.filter(s =>
+          s.title.toLowerCase().includes(q) ||
+          s.artistName.toLowerCase().includes(q)
+        ).slice(0, 10);
+
+        if (!matches.length) {
+          resultsBox.innerHTML = '<div class="song-result-item">No songs found</div>';
+        } else {
+          resultsBox.innerHTML = matches.map(s => `
+            <div class="song-result-item" data-id="${s.songId}" data-title="${s.title}" data-artist="${s.artistName}">
+              ${s.title}
+              <div class="song-result-item__artist">${s.artistName}</div>
+            </div>`).join('');
+        }
+        resultsBox.classList.add('open');
+      });
+
+      resultsBox.addEventListener('click', (e) => {
+        const item = e.target.closest('.song-result-item');
+        if (!item || !item.dataset.id) return;
+        selectSong({ songId: item.dataset.id, title: item.dataset.title, artistName: item.dataset.artist });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.song-search-wrap')) {
+          resultsBox.classList.remove('open');
+        }
+      });
+
+      // Prevent submitting without a song selected
+      document.getElementById('review-form').addEventListener('submit', (e) => {
+        if (!hiddenId.value) {
+          e.preventDefault();
+          searchInput.style.border = '1px solid rgba(255,100,100,.6)';
+          searchInput.placeholder = 'Please select a song first';
+        }
+      });
+    </script>
   </body>
 </html>
