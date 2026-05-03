@@ -8,7 +8,8 @@ listen list page, and a listen list page which showed all the saved songs.
 
 Jack Phalen:
 
-James Shanks:
+James Shanks: Created the entire profile page, implemented the log in and log out feature, and made it so 
+the 'create review' feature updates the reviews in the database.
 
 Shresta Jha:
 
