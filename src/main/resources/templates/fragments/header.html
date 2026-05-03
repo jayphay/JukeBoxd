@@ -25,8 +25,13 @@
                         <input type="search" name="query" class="search-input" placeholder="Search songs..." />
                         <button type="submit" style="display:none">Search</button>
                     </form>
-                    <form id="user-search-form" class="search-form">
-                        <input type="search" name="query" class="search-input" placeholder="Search users..." />
+                    <form id="user-search-form" class="search-form" action="/members" method="GET">
+                        <input
+                                type="search"
+                                name="username"
+                                class="search-input"
+                                placeholder="Search for friends..."
+                        />
                     </form>
                     <!-- Only show these links when logged in -->
                     <a th:if="${loggedIn}" class="nav__link" href="/create-review">Create a review</a>

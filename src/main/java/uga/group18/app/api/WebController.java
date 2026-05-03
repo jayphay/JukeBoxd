@@ -89,4 +89,28 @@ public class WebController {
         return "search-results"; // Returns search-results.html
     }
 
+    public record UserItem(Integer userId, String username, String firstName, String lastName) {}
+    @GetMapping("/members")
+    public String memberSearch(@RequestParam(required = false) String username, Model model) {
+        String sql = """
+        SELECT userId, username, firstName, lastName 
+        FROM user 
+        WHERE username LIKE ? OR firstName LIKE ? OR lastName LIKE ?
+        LIMIT 20
+    """;
+
+        String pattern = (username == null || username.isEmpty()) ? "%" : "%" + username + "%";
+
+        List<UserItem> members = jdbc.query(sql, (rs, rowNum) -> new UserItem(
+                rs.getInt("userId"),
+                rs.getString("username"),
+                rs.getString("firstName"),
+                rs.getString("lastName")
+        ), pattern, pattern, pattern);
+
+        model.addAttribute("members", members);
+        model.addAttribute("searchTerm", username);
+        return "members"; // Returns members.html
+    }
+
 }

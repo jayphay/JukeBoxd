@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+  <title>Find Members | Jukeboxd</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: main-header}"></div>
+
+<main class="wrap">
+  <section class="card card--wide">
+    <div class="card__head">
+      <h2 th:text="${searchTerm != null ? 'Results for: ' + searchTerm : 'Discover Members'}">Members</h2>
+      <span class="pill" th:text="${members.size() + ' users'}"></span>
+    </div>
+
+    <!-- Display users as Chips -->
+    <div class="chips">
+      <div class="chip" th:each="m : ${members}">
+        <a th:href="'/profile/' + ${m.username}" class="link">
+          <strong th:text="${m.username}">Username</strong>
+          <span th:text="${m.firstName + ' ' + m.lastName}">Real Name</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty" th:if="${members.empty}">
+      <p class="empty__title">No one found by that name.</p>
+      <p class="empty__body">Try searching for a different username.</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>
