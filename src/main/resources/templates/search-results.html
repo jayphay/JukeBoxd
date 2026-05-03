@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Search Results | Jukeboxd</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: main-header}"></div>
+
+<main class="wrap">
+    <section class="card card--wide">
+        <div class="card__head">
+            <h2 th:text="${'Results for: ' + (searchQuery ?: 'All Music')}">Results</h2>
+            <span class="pill" th:text="${results.size() + ' found'}"></span>
+        </div>
+
+        <div class="list">
+            <div class="row" th:each="song : ${results}">
+                <div class="row__left">
+                    <p class="row__title" th:text="${song.title}">Title</p>
+                    <p class="row__sub" th:text="${song.artistName + ' • ' + song.genre}">Artist</p>
+                </div>
+                <div class="score">Result</div>
+            </div>
+
+            <div class="empty" th:if="${results.empty}">
+                <p class="empty__title">No matches found.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
