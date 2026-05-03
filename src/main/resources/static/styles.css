@@ -409,6 +409,10 @@ body {
   border-color: rgba(255, 211, 138, 0.2);
 }
 
+.row {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 .listen-toggle.is-saved:hover {
   background: rgba(255, 211, 138, 0.15);
   border-color: rgba(255, 211, 138, 0.4);

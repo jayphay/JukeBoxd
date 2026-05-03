@@ -31,12 +31,12 @@ const renderRows = (el, items, kindLabel) => {
   }).join("");
 };
 document.addEventListener('click', async (e) => {
-  // Use .closest to ensure we catch the click even if you hit the text inside the button
   const btn = e.target.closest('.listen-toggle');
   if (!btn) return;
 
   e.preventDefault();
   const songId = btn.getAttribute('data-id');
+  const isListenListPage = btn.getAttribute('data-page') === 'listenlist';
 
   try {
     const res = await fetch(`/api/home/listen-list/toggle?songId=${encodeURIComponent(songId)}`, {
@@ -46,19 +46,19 @@ document.addEventListener('click', async (e) => {
     if (res.ok) {
       const data = await res.json();
 
-      // Update the appearance using CSS classes instead of inline styles
-      if (data.status === 'added') {
-        btn.innerText = '✓ Saved';
-        btn.classList.add('is-saved'); // This triggers the blue background in CSS
+      if (data.status === 'removed' && isListenListPage) {
+          // OPTION A: Remove the entire row from the list immediately
+          btn.closest('.row').style.opacity = '0';
+          setTimeout(() => btn.closest('.row').remove(), 300);
       } else {
-        btn.innerText = '+ List';
-        btn.classList.remove('is-saved'); // This returns it to the ghost style
+          // OPTION B: Just toggle the button (for search/home pages)
+          const isAdded = data.status === 'added';
+          btn.innerText = isAdded ? 'SAVED' : '+ LIST';
+          btn.classList.toggle('is-saved', isAdded);
       }
-    } else if (res.status === 401) {
-      alert("Please log in to save songs to your list!");
     }
   } catch (err) {
-    console.error("Failed to toggle listen list:", err);
+    console.error("Error:", err);
   }
 });
 
