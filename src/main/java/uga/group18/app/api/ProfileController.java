@@ -1,8 +1,12 @@
 package uga.group18.app.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+
+import uga.group18.app.models.User;
+import uga.group18.app.services.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +22,12 @@ import java.util.Map;
 public class ProfileController {
 
     private final JdbcTemplate jdbc;
+    private final UserService userService;
 
-    public ProfileController(JdbcTemplate jdbc) {
+    @Autowired
+    public ProfileController(JdbcTemplate jdbc, UserService userService) {
         this.jdbc = jdbc;
+        this.userService = userService;
     }
 
     // ── Records ──────────────────────────────────────────────────────────────
@@ -125,5 +132,26 @@ public class ProfileController {
         );
 
         return ResponseEntity.ok(reviews);
+    }
+    public record EditReviewRequest(String comment, String rating) {}
+
+    /** UPDATE an existing review — fulfils the "update an existing row" query requirement. */
+    @PutMapping("/reviews/{songId}")
+    public ResponseEntity<Void> editReview(@PathVariable String songId,
+                                           @RequestBody EditReviewRequest body) {
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        int updated = jdbc.update(
+                "UPDATE review SET comment = ?, rating = ? WHERE userId = ? AND songId = ?",
+                body.comment(),
+                body.rating(),
+                Integer.parseInt(user.getUserId()),
+                songId
+        );
+
+        return updated > 0 ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }
