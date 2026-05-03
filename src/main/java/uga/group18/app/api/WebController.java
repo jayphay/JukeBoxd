@@ -6,10 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.group18.app.models.User;
 import uga.group18.app.services.UserService;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -52,31 +55,38 @@ public class WebController {
         return userService.isAuthenticated();
     }
 
-    @GetMapping("/listenlist")
-    public String listenList(Model model) {
-        User loggedInUser = userService.getLoggedInUser();
-        if (loggedInUser == null) {
-            return "redirect:/login";
+    @GetMapping("/search")
+    public String searchPage(@RequestParam(required = false) String query,
+                             @RequestParam(required = false) String genre,
+                             Model model) {
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT s.songId, s.title, ar.artist_name, COALESCE(a.title, '') as albumTitle, s.genre 
+        FROM song s 
+        JOIN artist ar ON ar.artistId = s.artistId 
+        LEFT JOIN album a ON a.albumId = s.albumId 
+        WHERE 1=1 
+    """);
+
+        List<Object> params = new ArrayList<>();
+        if (query != null && !query.isEmpty()) {
+            sql.append(" AND (s.title LIKE ? OR ar.artist_name LIKE ?)");
+            params.add("%" + query + "%"); params.add("%" + query + "%");
         }
-        int currentUserId = Integer.parseInt(loggedInUser.getUserId());
+        if (genre != null && !genre.isEmpty()) {
+            sql.append(" AND s.genre = ?");
+            params.add(genre);
+        }
 
-        String sql = """
-        SELECT s.songId, s.title, ar.artist_name 
-        FROM listen_list ll
-        JOIN song s ON ll.songId = s.songId
-        JOIN artist ar ON s.artistId = ar.artistId
-        WHERE ll.userId = ?
-    """;
+        List<HomeController.SongItem> results = jdbc.query(sql.toString(), (rs, rowNum) ->
+                new HomeController.SongItem(
+                        rs.getString("songId"), rs.getString("title"),
+                        rs.getString("artist_name"), rs.getString("albumTitle"), rs.getString("genre")
+                ), params.toArray());
 
-        List<HomeController.SongItem> userSongs = jdbc.query(sql, (rs, rowNum) -> new HomeController.SongItem(
-                rs.getString("songId"),
-                rs.getString("title"),
-                rs.getString("artist_name"),
-                null, // albumTitle (optional)
-                null  // genre (optional)
-        ), currentUserId);
-
-        model.addAttribute("listenSongs", userSongs);
-        return "listenlist"; // Looks for templates/listenlist.html
+        model.addAttribute("results", results);
+        model.addAttribute("searchQuery", query);
+        return "search-results"; // Returns search-results.html
     }
+
 }
