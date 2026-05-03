@@ -54,8 +54,11 @@ public class WebController {
 
     @GetMapping("/listenlist")
     public String listenList(Model model) {
-        // Replace with a real userId once you have a login system set up
-        int currentUserId = 1;
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+        int currentUserId = Integer.parseInt(loggedInUser.getUserId());
 
         String sql = """
         SELECT s.songId, s.title, ar.artist_name 
