@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register • Jukeboxd</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .auth-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 16px;
+      }
+      .auth-card {
+        width: min(420px, 100%);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 40px 36px;
+        box-shadow: var(--shadow);
+      }
+      .auth-brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 32px;
+      }
+      .auth-title {
+        font-family: "Fraunces", serif;
+        font-weight: 800;
+        font-size: 22px;
+        letter-spacing: -.02em;
+        margin: 0 0 24px;
+      }
+      .auth-error {
+        background: rgba(255, 100, 100, .10);
+        border: 1px solid rgba(255, 100, 100, .25);
+        color: rgba(255, 160, 160, .95);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .auth-footer {
+        margin-top: 20px;
+        font-size: 13px;
+        color: var(--muted2);
+        text-align: center;
+      }
+      .auth-footer a {
+        color: var(--accent2);
+        text-decoration: none;
+      }
+      .auth-footer a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="bg"></div>
+    <div class="auth-wrap">
+      <div class="auth-card">
+
+        <div class="auth-brand">
+          <div class="brand__mark" aria-hidden="true">J</div>
+          <div>
+            <div class="brand__title">Jukeboxd</div>
+            <div class="brand__tagline">Discover what's spinning now.</div>
+          </div>
+        </div>
+
+        <div class="auth-title">Create account</div>
+
+        <!-- Error message -->
+        <div class="auth-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <form class="auth-form" method="post" action="/register">
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">First name</span>
+              <input class="field__input" type="text" name="firstName" placeholder="Alex" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Last name</span>
+              <input class="field__input" type="text" name="lastName" placeholder="Smith" required />
+            </label>
+          </div>
+          <label class="field">
+            <span class="field__label">Username</span>
+            <input class="field__input" type="text" name="username" placeholder="e.g. alex" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Password</span>
+            <input class="field__input" type="password" name="password" placeholder="••••••••" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Confirm password</span>
+            <input class="field__input" type="password" name="passwordRepeat" placeholder="••••••••" required />
+          </label>
+          <div class="actions" style="margin-top: 4px">
+            <button class="btn btn--primary" type="submit" style="flex:1; justify-content:center">Create account</button>
+          </div>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account? <a href="/login">Sign in</a>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

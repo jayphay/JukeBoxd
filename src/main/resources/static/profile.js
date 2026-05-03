@@ -152,22 +152,16 @@ const renderProfile = ({ userInfo, reviews }) => {
   // Reviews list
   renderReviews(reviews);
 
-  // Show the main layout
-  document.getElementById("profile-main").style.display = "";
 };
 
 window.addEventListener("DOMContentLoaded", async () => {
   // 1. Resolve username
-  const username =
-    qs("user") ?? sessionStorage.getItem("jukeboxd.currentUser") ?? null;
+  // window.JUKEBOXD_USERNAME is injected by the Thymeleaf template (server-side session)
+  const username = window.JUKEBOXD_USERNAME ?? qs("user") ?? null;
 
   if (!username) {
-    document.getElementById("profile-not-found").style.display = "";
     return;
   }
-
-  // Show skeleton while loading
-  document.getElementById("profile-main").style.display = "";
 
   try {
     // 2a. Try real API first

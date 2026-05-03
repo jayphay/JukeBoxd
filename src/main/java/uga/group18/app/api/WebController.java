@@ -6,16 +6,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.ModelAndView;
 
+import uga.group18.app.models.User;
+import uga.group18.app.services.UserService;
 import java.util.List;
 
 @Controller
 public class WebController {
 
     private final JdbcTemplate jdbc;
+    private final UserService userService;
 
-    public WebController(JdbcTemplate jdbc) {
+    public WebController(JdbcTemplate jdbc, UserService userService) {
         this.jdbc = jdbc;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -24,13 +29,27 @@ public class WebController {
     }
 
     @GetMapping("/profile")
-    public String profile() {
-        return "forward:/profile.html";
+    public ModelAndView profile() {
+        ModelAndView mv = new ModelAndView("profile");
+        User user = userService.getLoggedInUser();
+        mv.addObject("username", user != null ? user.getUsername() : null);
+        return mv;
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        userService.unAuthenticate();
+        return "redirect:/login";
     }
 
     @ModelAttribute("genres")
     public List<String> getGenres() {
         return jdbc.queryForList("SELECT DISTINCT genre FROM song WHERE genre IS NOT NULL", String.class);
+    }
+
+    @ModelAttribute("loggedIn")
+    public boolean isLoggedIn() {
+        return userService.isAuthenticated();
     }
 
     @GetMapping("/listenlist")
