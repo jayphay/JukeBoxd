@@ -371,6 +371,49 @@ body {
   .header__row{flex-direction:column; align-items:flex-start}
 }
 
+.listen-toggle {
+  /* 1. Reset browser defaults */
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.03); /* Very subtle transparent dark */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+
+  /* 2. Match your .score / .pill badge style */
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: var(--muted2);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover: Light glow like your cards */
+.listen-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
+/* "Saved" State: Gold text/border matching 'Trending' badges */
+.listen-toggle.is-saved {
+  color: var(--accent); /* Your gold color: #ffd38a */
+  background: rgba(255, 211, 138, 0.1);
+  border-color: rgba(255, 211, 138, 0.2);
+}
+
+.listen-toggle.is-saved:hover {
+  background: rgba(255, 211, 138, 0.15);
+  border-color: rgba(255, 211, 138, 0.4);
+}
+
 .grid { padding: 0 0 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
 .card--wide { grid-column: 1 / -1; }

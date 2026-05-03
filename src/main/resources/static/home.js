@@ -7,23 +7,60 @@ const escapeHtml = (s) =>
     .replaceAll("'", "&#039;");
 
 const renderRows = (el, items, kindLabel) => {
-  el.innerHTML = items
-    .map((it) => {
-      const title = escapeHtml(it.title);
-      const subtitle = escapeHtml(it.subtitle ?? "");
-      const score = escapeHtml(it.score ?? "");
-      return `
-        <li class="row">
-          <div class="row__left">
-            <div class="row__title">${title}</div>
-            <div class="row__sub">${subtitle || kindLabel}</div>
-          </div>
-          ${score ? `<div class="score">${score}</div>` : ""}
-        </li>
-      `;
-    })
-    .join("");
+  if (!el) return;
+  el.innerHTML = items.map((it) => {
+    const isSong = kindLabel === "Single" || kindLabel === "Result" || kindLabel === "Search Result";
+    const savedClass = it.isSaved ? 'is-saved' : '';
+    const btnText = it.isSaved ? 'Saved' : '+ List'; // Shorter text
+
+    return `
+      <li class="row" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="row__left">
+          <div class="row__title">${escapeHtml(it.title)}</div>
+          <div class="row__sub">${escapeHtml(it.subtitle ?? "")}</div>
+        </div>
+        <div class="row__right">
+          ${isSong ? `
+            <button class="listen-toggle ${savedClass}" data-id="${it.songId}">
+              ${btnText}
+            </button>
+          ` : ""}
+        </div>
+      </li>
+    `;
+  }).join("");
 };
+document.addEventListener('click', async (e) => {
+  // Use .closest to ensure we catch the click even if you hit the text inside the button
+  const btn = e.target.closest('.listen-toggle');
+  if (!btn) return;
+
+  e.preventDefault();
+  const songId = btn.getAttribute('data-id');
+
+  try {
+    const res = await fetch(`/api/home/listen-list/toggle?songId=${encodeURIComponent(songId)}`, {
+      method: 'POST'
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+
+      // Update the appearance using CSS classes instead of inline styles
+      if (data.status === 'added') {
+        btn.innerText = '✓ Saved';
+        btn.classList.add('is-saved'); // This triggers the blue background in CSS
+      } else {
+        btn.innerText = '+ List';
+        btn.classList.remove('is-saved'); // This returns it to the ghost style
+      }
+    } else if (res.status === 401) {
+      alert("Please log in to save songs to your list!");
+    }
+  } catch (err) {
+    console.error("Failed to toggle listen list:", err);
+  }
+});
 
 const renderChips = (el, items) => {
   el.innerHTML = items
@@ -97,11 +134,11 @@ const popularAlbums = [
 ];
 
 const popularSingles = [
-  { title: "Bad Habit", subtitle: "Steve Lacy", score: "4.1" },
-  { title: "Kill Bill", subtitle: "SZA", score: "4.2" },
-  { title: "As It Was", subtitle: "Harry Styles", score: "3.9" },
-  { title: "Cruel Summer", subtitle: "Taylor Swift", score: "4.0" },
-  { title: "Paint The Town Red", subtitle: "Doja Cat", score: "3.8" },
+  { songId: "1", title: "Bad Habit", subtitle: "Steve Lacy", score: "4.1" },
+  { songId: "2", title: "Kill Bill", subtitle: "SZA", score: "4.2" },
+  { songId: "3", title: "As It Was", subtitle: "Harry Styles", score: "3.9" },
+  { songId: "4", title: "Cruel Summer", subtitle: "Taylor Swift", score: "4.0" },
+  { songId: "5", title: "Paint The Town Red", subtitle: "Doja Cat", score: "3.8" },
 ];
 
 const popularArtists = [
@@ -162,9 +199,11 @@ window.addEventListener("DOMContentLoaded", () => {
       if (singlesEl) {
         const rows = await fetchJson("/api/home/popular-singles");
         const items = rows.map((r) => ({
-          title: r.title || "(Untitled song)",
-          subtitle: `${r.artistName}${r.albumTitle ? ` • ${r.albumTitle}` : ""}`,
-          score: r.genre ? r.genre : "",
+          songId: r.songId,
+          title: r.title,
+          artistName: r.artistName,
+          genre: r.genre,
+          isSaved: r.isSaved // <--- Pass the boolean from Java to JS here
         }));
         renderRows(singlesEl, items, "Single");
       }

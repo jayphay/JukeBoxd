@@ -1,24 +1,28 @@
 package uga.group18.app.api;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import uga.group18.app.models.User;
+import uga.group18.app.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/home")
 public class HomeController {
     private final JdbcTemplate jdbc;
 
-    public HomeController(JdbcTemplate jdbc) {
+    private final UserService userService;
+
+    public HomeController(JdbcTemplate jdbc, UserService userService) {
         this.jdbc = jdbc;
+        this.userService = userService;
     }
 
     public record AlbumItem(String albumId, String title, String artistName, Integer releaseYear, Integer songsCount) {}
-    public record SongItem(String songId, String title, String artistName, String albumTitle, String genre) {}
+    public record SongItem(String songId, String title, String artistName, String albumTitle, String genre, boolean isSaved) {}
     public record ArtistItem(Integer artistId, String artistName, Integer songsCount, Integer albumsCount) {}
     public record ReviewItem(Integer userId, String username, String songId, String songTitle, String artistName, String comment, String rating) {}
 
@@ -51,6 +55,10 @@ public class HomeController {
 
     @GetMapping("/popular-singles")
     public List<SongItem> popularSingles() {
+        User user = userService.getLoggedInUser();
+        // Use the logged-in ID, or a dummy value like -1 for guests
+        String userId = (user != null) ? user.getUserId() : "-1";
+
         return jdbc.query(
                 """
                 SELECT
@@ -58,10 +66,12 @@ public class HomeController {
                   s.title,
                   ar.artist_name AS artistName,
                   COALESCE(a.title, '') AS albumTitle,
-                  s.genre
+                  s.genre,
+                  (CASE WHEN ll.songId IS NOT NULL THEN 1 ELSE 0 END) AS isSaved
                 FROM song s
                 JOIN artist ar ON ar.artistId = s.artistId
                 LEFT JOIN album a ON a.albumId = s.albumId
+                LEFT JOIN listen_list ll ON ll.songId = s.songId AND ll.userId = ?
                 ORDER BY s.title ASC
                 LIMIT 10
                 """,
@@ -70,9 +80,32 @@ public class HomeController {
                         rs.getString("title"),
                         rs.getString("artistName"),
                         rs.getString("albumTitle"),
-                        rs.getString("genre")
-                )
+                        rs.getString("genre"),
+                        rs.getInt("isSaved") == 1 // Add this to your SongItem record!
+                ),
+                userId
         );
+    }
+
+    @PostMapping("/listen-list/toggle")
+    public ResponseEntity<Map<String, String>> toggleListenList(@RequestParam String songId) {
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Please log in first"));
+        }
+
+        // Check if it already exists
+        Integer count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM listen_list WHERE userId = ? AND songId = ?",
+                Integer.class, user.getUserId(), songId);
+
+        if (count > 0) {
+            jdbc.update("DELETE FROM listen_list WHERE userId = ? AND songId = ?", user.getUserId(), songId);
+            return ResponseEntity.ok(Map.of("status", "removed"));
+        } else {
+            jdbc.update("INSERT INTO listen_list (userId, songId) VALUES (?, ?)", user.getUserId(), songId);
+            return ResponseEntity.ok(Map.of("status", "added"));
+        }
     }
 
     @GetMapping("/popular-artists")
