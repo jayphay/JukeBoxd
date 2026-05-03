@@ -1,5 +1,6 @@
 import csv
 import mysql.connector
+import bcrypt
 from datetime import datetime
 
 # --- Docker MySQL connection settings ---
@@ -143,9 +144,10 @@ def run():
         ("sam",   "pass", "Sam",   "Demo"),
     ]
     for username, password, first, last in demo_users:
+        hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         cursor.execute(
             "INSERT IGNORE INTO user (username, password, firstName, lastName) VALUES (%s, %s, %s, %s)",
-            (username, password, first, last),
+            (username, hashed, first, last),
         )
     conn.commit()
 
