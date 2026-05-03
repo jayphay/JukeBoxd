@@ -12,7 +12,10 @@ the database as well as db_design.pdf. Added indices and compared the query time
 James Shanks: Created the entire profile page, implemented the log in and log out feature, and made it so 
 the 'create review' feature updates the reviews in the database.
 
-Shresta Jha:
+Shresta Jha: Implemented the Home Page and Review Screen for the assigned project. The Home Page included sections for the title, popular albums, 
+popular singles, popular artists, and recent reviews to allow users to browse music content in a structured layout. 
+The Review Screen allowed users to create new reviews and view existing reviews, supporting
+ basic review functionality and interaction within the application.
 
 Grant Moore:
 
