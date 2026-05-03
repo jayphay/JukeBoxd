@@ -17,15 +17,15 @@ Grant Moore:
 
 Technologies:
 
-Database Name:
-Database Username:
-Password:
+Database Name: jukeboxd_db
+Database Username: root
+Password: mysqlpass
 
-Username:
-Password:
+Username: alex
+Password: pass
 
-Username:
-Password:
+Username: priya
+Password: pass
 
-Username:
-Password:
+Username: sam
+Password: pass
