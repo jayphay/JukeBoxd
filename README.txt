@@ -10,7 +10,7 @@ Jack Phalen: Created the database and tables generated from the ER diagram and n
 the database as well as db_design.pdf. Added indices and compared the query times before and after adding them. 
 
 James Shanks: Created the entire profile page, implemented the log in and log out feature, and made it so 
-the 'create review' feature updates the reviews in the database.
+the 'create review' feature updates the reviews in the database. Also created the edit review feature.
 
 Shresta Jha: Implemented the Home Page and Review Screen for the assigned project. The Home Page included sections for the title, popular albums, 
 popular singles, popular artists, and recent reviews to allow users to browse music content in a structured layout. 
