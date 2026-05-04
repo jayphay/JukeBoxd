@@ -25,6 +25,10 @@ Also wrote the security.txt file
 Technologies: We used mysql.connector to populate the DB with data from a csv file that has lots of song data.
 We used bcrypt to hash passwords. We used thymeleaf for HTML templating and Spring JDBC to access the DB.
 
+To populate the DB with songs, run the command pip install mysql-connector-python and then python populate_db.py.
+This will create the DB and tables and fill the DB with songs.
+After it's populated, then run data.sql to fill in the remaining demo data.
+
 Database Name: jukeboxd_db
 Database Username: mysql-server-x370
 Password: mysqlpass

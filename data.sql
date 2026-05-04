@@ -1,3 +1,7 @@
+-- BEFORE RUNNING THIS:
+-- Populate the DB with songs using these instructions:
+-- run the command pip install mysql-connector-python and then python populate_db.py
+
 use jukeboxd_db;
 
 insert into user values (1, "dsmith", "$2a$10$0bdF8iScIvp2qvvaCSnKlO5o7KoqfzTltCcYi8Jvb2LSfh/NMy0hq", "Dean", "Smith"); -- pw: dog
