@@ -85,7 +85,9 @@ const renderReviews = (reviews, isOwnProfile = false) => {
         <div class="review" id="review-${songId}">
           <div class="review__main">
             <div class="review__headline" style="display:flex; justify-content:space-between; align-items:center;">
-              <span>${headline}</span>
+              <a href="/song?id=${songId}" style="color: inherit; text-decoration: none;">
+                <span>${headline}</span>
+              </a>
               ${editBtn}
             </div>
             <div class="review__body" id="review-comment-${songId}">${comment}</div>

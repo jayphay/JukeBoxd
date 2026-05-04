@@ -65,28 +65,29 @@ public class WebController {
 
     @GetMapping("/search")
     public String searchPage(@RequestParam(required = false) String query,
-                             @RequestParam(required = false) String genre,
-                             Model model) {
+            @RequestParam(required = false) String genre,
+            Model model) {
         User user = userService.getLoggedInUser();
         String userId = (user != null) ? user.getUserId() : "-1"; // Use -1 if guest
 
         // Updated SQL: Checks if the song is in the user's listen list
         StringBuilder sql = new StringBuilder("""
-        SELECT s.songId, s.title, ar.artist_name, COALESCE(a.title, '') as albumTitle, s.genre,
-               (CASE WHEN ll.songId IS NOT NULL THEN 1 ELSE 0 END) as isSaved
-        FROM song s 
-        JOIN artist ar ON ar.artistId = s.artistId 
-        LEFT JOIN album a ON a.albumId = s.albumId 
-        LEFT JOIN listen_list ll ON ll.songId = s.songId AND ll.userId = ?
-        WHERE 1=1 
-    """);
+                    SELECT s.songId, s.title, ar.artist_name, COALESCE(a.title, '') as albumTitle, s.genre,
+                           (CASE WHEN ll.songId IS NOT NULL THEN 1 ELSE 0 END) as isSaved
+                    FROM song s
+                    JOIN artist ar ON ar.artistId = s.artistId
+                    LEFT JOIN album a ON a.albumId = s.albumId
+                    LEFT JOIN listen_list ll ON ll.songId = s.songId AND ll.userId = ?
+                    WHERE 1=1
+                """);
 
         List<Object> params = new ArrayList<>();
         params.add(userId); // Add userId for the LEFT JOIN check
 
         if (query != null && !query.isEmpty()) {
             sql.append(" AND (s.title LIKE ? OR ar.artist_name LIKE ?)");
-            params.add("%" + query + "%"); params.add("%" + query + "%");
+            params.add("%" + query + "%");
+            params.add("%" + query + "%");
         }
         if (genre != null && !genre.isEmpty()) {
             sql.append(" AND s.genre = ?");
@@ -94,12 +95,10 @@ public class WebController {
         }
 
         // Map the results and include the "isSaved" status
-        List<SongSearchItem> results = jdbc.query(sql.toString(), (rs, rowNum) ->
-                new SongSearchItem(
-                        rs.getString("songId"), rs.getString("title"),
-                        rs.getString("artist_name"), rs.getString("genre"),
-                        rs.getInt("isSaved") == 1
-                ), params.toArray());
+        List<SongSearchItem> results = jdbc.query(sql.toString(), (rs, rowNum) -> new SongSearchItem(
+                rs.getString("songId"), rs.getString("title"),
+                rs.getString("artist_name"), rs.getString("genre"),
+                rs.getInt("isSaved") == 1), params.toArray());
 
         model.addAttribute("results", results);
         model.addAttribute("searchQuery", query);
@@ -107,17 +106,20 @@ public class WebController {
     }
 
     // Add this record inside WebController or as a separate file
-    public record SongSearchItem(String songId, String title, String artistName, String genre, boolean isSaved) {}
+    public record SongSearchItem(String songId, String title, String artistName, String genre, boolean isSaved) {
+    }
 
-    public record UserItem(Integer userId, String username, String firstName, String lastName) {}
+    public record UserItem(Integer userId, String username, String firstName, String lastName) {
+    }
+
     @GetMapping("/members")
     public String memberSearch(@RequestParam(required = false) String username, Model model) {
         String sql = """
-        SELECT userId, username, firstName, lastName 
-        FROM user 
-        WHERE username LIKE ? OR firstName LIKE ? OR lastName LIKE ?
-        LIMIT 20
-    """;
+                    SELECT userId, username, firstName, lastName
+                    FROM user
+                    WHERE username LIKE ? OR firstName LIKE ? OR lastName LIKE ?
+                    LIMIT 20
+                """;
 
         String pattern = (username == null || username.isEmpty()) ? "%" : "%" + username + "%";
 
@@ -125,8 +127,7 @@ public class WebController {
                 rs.getInt("userId"),
                 rs.getString("username"),
                 rs.getString("firstName"),
-                rs.getString("lastName")
-        ), pattern, pattern, pattern);
+                rs.getString("lastName")), pattern, pattern, pattern);
 
         model.addAttribute("members", members);
         model.addAttribute("searchTerm", username);
@@ -143,23 +144,22 @@ public class WebController {
         }
 
         String sql = """
-        SELECT s.songId, s.title, ar.artist_name 
-        FROM listen_list ll
-        JOIN song s ON ll.songId = s.songId
-        JOIN artist ar ON s.artistId = ar.artistId
-        WHERE ll.userId = ?
-    """;
+                    SELECT s.songId, s.title, ar.artist_name
+                    FROM listen_list ll
+                    JOIN song s ON ll.songId = s.songId
+                    JOIN artist ar ON s.artistId = ar.artistId
+                    WHERE ll.userId = ?
+                """;
 
         // Use user.getUserId() instead of hardcoded '1'
-        List<HomeController.SongItem> userSongs = jdbc.query(sql, (rs, rowNum) ->
-                new HomeController.SongItem(
-                        rs.getString("songId"),
-                        rs.getString("title"),
-                        rs.getString("artist_name"),
-                        null, // albumTitle
-                        null, // genre
-                        true  // isSaved (Setting this to true fixes the argument mismatch)
-                ), user.getUserId());
+        List<HomeController.SongItem> userSongs = jdbc.query(sql, (rs, rowNum) -> new HomeController.SongItem(
+                rs.getString("songId"),
+                rs.getString("title"),
+                rs.getString("artist_name"),
+                null, // albumTitle
+                null, // genre
+                true // isSaved (Setting this to true fixes the argument mismatch)
+        ), user.getUserId());
 
         model.addAttribute("listenSongs", userSongs);
         model.addAttribute("username", user.getUsername());
@@ -169,6 +169,11 @@ public class WebController {
     @GetMapping("/album")
     public String albumDetails(@RequestParam(required = false) String id) {
         return "album-view";
+    }
+
+    @GetMapping("/song")
+    public String songPage(@RequestParam(required = false) String id) {
+        return "song-view";
     }
 
 }

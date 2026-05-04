@@ -35,7 +35,9 @@ const renderSongs = (songs) => {
         return `
       <div class="song-row">
         <div class="song-row__index">${index + 1}</div>
-        <div class="song-row__title">${song.title}</div>
+        <a href="/song?id=${encodeURIComponent(song.songId)}" class="song-row__title" style="text-decoration: none; color: inherit;">
+            <div class="song-row__title">${song.title}</div>
+        </a>
         <div class="song-row__genre">${song.genre || "—"}</div>
         <div class="song-row__rating">${ratingDisplay}</div>
       </div>

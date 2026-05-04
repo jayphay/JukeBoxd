@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Search Results | Jukeboxd</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
-<div th:replace="~{fragments/header :: main-header}"></div>
+    <div th:replace="~{fragments/header :: main-header}"></div>
 
-<main class="wrap">
-    <section class="card card--wide">
-        <div class="card__head">
-            <h2 th:text="${'Results for: ' + (searchQuery ?: 'All Music')}">Results</h2>
-            <span class="pill" th:text="${results.size() + ' found'}"></span>
-        </div>
-
-        <div class="list">
-            <div class="row" th:each="song : ${results}" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="row__left">
-                    <p class="row__title" th:text="${song.title}">Song Title</p>
-                    <p class="row__sub" th:text="${song.artistName + ' • ' + song.genre}">Artist • Genre</p>
-                </div>
-
-                <button class="listen-toggle"
-                        th:classappend="${song.isSaved} ? 'is-saved' : ''"
-                        th:data-id="${song.songId}"
-                        th:text="${song.isSaved ? 'SAVED' : '+ LIST'}">
-                </button>
+    <main class="wrap">
+        <section class="card card--wide">
+            <div class="card__head">
+                <h2 th:text="${'Results for: ' + (searchQuery ?: 'All Music')}">Results</h2>
+                <span class="pill" th:text="${results.size() + ' found'}"></span>
             </div>
-        </div>
-    </section>
-</main>
 
-<script src="/home.js"></script>
+            <div class="list">
+                <div class="row" th:each="song : ${results}"
+                    style="display: flex; justify-content: space-between; align-items: center;">
+                    <a th:href="@{/song?id={id}(id=${song.songId})}" class="row__link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                        <div class="row__left">
+                            <p class="row__title" th:text="${song.title}">Song Title</p>
+                            <p class="row__sub" th:text="${song.artistName + ' • ' + song.genre}">Artist • Genre</p>
+                        </div>
+                    </a>
 
-<script>
-    // Add this directly in the HTML to verify clicks are working
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('listen-toggle')) {
-            console.log("HTML Inline Script: Click detected!");
-        }
-    });
-</script>
+                    <button class="listen-toggle" th:classappend="${song.isSaved} ? 'is-saved' : ''"
+                        th:data-id="${song.songId}" th:text="${song.isSaved ? 'SAVED' : '+ LIST'}">
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/home.js"></script>
+
+    <script>
+        // Add this directly in the HTML to verify clicks are working
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('listen-toggle')) {
+                console.log("HTML Inline Script: Click detected!");
+            }
+        });
+    </script>
 
 </body>
+
 </html>

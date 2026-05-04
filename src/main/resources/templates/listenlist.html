@@ -13,17 +13,17 @@
     <section class="card card--wide">
         <div class="card__head">
             <h2>My Listen List</h2>
-            <span class="pill">Save for later</span>
+            <span class="pill">Saved for later</span>
         </div>
 
         <!-- Loop through the list from Java -->
         <div class="list">
             <!-- Loop through the listenSongs list sent by WebController -->
             <div class="row" th:each="song : ${listenSongs}" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="row__left">
+                <a class="row__left" th:href="@{/song?id={id}(id=${song.songId})}" style="color: white; text-decoration: none;">
                     <p class="row__title" th:text="${song.title}">Song Title</p>
                     <p class="row__sub" th:text="${song.artistName}">Artist Name</p>
-                </div>
+                </a>
 
                 <!-- The button starts as 'SAVED' because it's already in the list -->
                 <button class="listen-toggle is-saved"

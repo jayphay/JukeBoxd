@@ -12,6 +12,7 @@ const renderRows = (el, items, kindLabel) => {
     const isSong = kindLabel === "Single" || kindLabel === "Result" || kindLabel === "Search Result";
     const savedClass = it.isSaved ? 'is-saved' : '';
     const btnText = it.isSaved ? 'Saved' : '+ List'; // Shorter text
+    console.log("Rendering kind:", kindLabel); // Debug log to check data structure
 
     return `
       <li class="row" style="display: flex; justify-content: space-between; align-items: center;">
@@ -85,9 +86,11 @@ const renderReviews = (el, items) => {
       return `
         <div class="review">
           <div class="review__main">
-            <div class="review__headline">
-              ${id ? `<a class="link" href="/review.html?id=${id}">${headline}</a>` : headline}
-            </div>
+            <a href="/song?id=${encodeURIComponent(it.songId)}" style="text-decoration: none; color: inherit;">
+              <div class="review__headline">
+                ${id ? `<a class="link" href="/review.html?id=${id}">${headline}</a>` : headline}
+              </div>
+            </a>
             ${meta ? `<div class="review__meta">${meta}</div>` : ""}
             ${body ? `<div class="review__body">${body}</div>` : ""}
           </div>
@@ -225,6 +228,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (Array.isArray(rows) && rows.length) {
           const items = rows.map((r) => ({
             headline: `${r.songTitle} — ${r.artistName}`,
+            songId: r.songId,
             meta: `by ${r.username}`,
             body: r.comment,
             rating: ratingStars(r.rating),
