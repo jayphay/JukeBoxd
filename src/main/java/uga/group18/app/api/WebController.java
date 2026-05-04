@@ -166,4 +166,9 @@ public class WebController {
         return "listenlist";
     }
 
+    @GetMapping("/album")
+    public String albumDetails(@RequestParam(required = false) String id) {
+        return "album-view";
+    }
+
 }

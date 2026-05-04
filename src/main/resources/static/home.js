@@ -15,17 +15,19 @@ const renderRows = (el, items, kindLabel) => {
 
     return `
       <li class="row" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="row__left">
-          <div class="row__title">${escapeHtml(it.title)}</div>
-          <div class="row__sub">${escapeHtml(it.subtitle ?? "")}</div>
-        </div>
-        <div class="row__right">
-          ${isSong ? `
-            <button class="listen-toggle ${savedClass}" data-id="${it.songId}">
-              ${btnText}
-            </button>
-          ` : ""}
-        </div>
+        <a href="${isSong ? `/song?id=${encodeURIComponent(it.songId)}` : `/album?id=${encodeURIComponent(it.albumId)}`}" class="row__left" style="text-decoration: none; color: inherit;">
+          <div class="row__left">
+            <div class="row__title">${escapeHtml(it.title)}</div>
+            <div class="row__sub">${escapeHtml(it.subtitle ?? "")}</div>
+          </div>
+          <div class="row__right">
+            ${isSong ? `
+              <button class="listen-toggle ${savedClass}" data-id="${it.songId}">
+                ${btnText}
+              </button>
+            ` : ""}
+          </div>
+        </a>
       </li>
     `;
   }).join("");
@@ -47,14 +49,14 @@ document.addEventListener('click', async (e) => {
       const data = await res.json();
 
       if (data.status === 'removed' && isListenListPage) {
-          // OPTION A: Remove the entire row from the list immediately
-          btn.closest('.row').style.opacity = '0';
-          setTimeout(() => btn.closest('.row').remove(), 300);
+        // OPTION A: Remove the entire row from the list immediately
+        btn.closest('.row').style.opacity = '0';
+        setTimeout(() => btn.closest('.row').remove(), 300);
       } else {
-          // OPTION B: Just toggle the button (for search/home pages)
-          const isAdded = data.status === 'added';
-          btn.innerText = isAdded ? 'SAVED' : '+ LIST';
-          btn.classList.toggle('is-saved', isAdded);
+        // OPTION B: Just toggle the button (for search/home pages)
+        const isAdded = data.status === 'added';
+        btn.innerText = isAdded ? 'SAVED' : '+ LIST';
+        btn.classList.toggle('is-saved', isAdded);
       }
     }
   } catch (err) {
@@ -189,6 +191,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (albumsEl) {
         const rows = await fetchJson("/api/home/popular-albums");
         const items = rows.map((r) => ({
+          albumId: r.albumId,
           title: r.title || "(Untitled album)",
           subtitle: `${r.artistName}${r.releaseYear ? ` • ${r.releaseYear}` : ""}`,
           score: r.songsCount ? `${r.songsCount} songs` : "",
