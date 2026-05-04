@@ -20,6 +20,8 @@ body {
   background: radial-gradient(1400px 800px at 15% 10%, rgba(255,211,138,.12), transparent 60%),
               radial-gradient(1100px 700px at 90% 0%, rgba(155,215,255,.13), transparent 55%),
               linear-gradient(180deg, var(--bg0), var(--bg1));
+  background-attachment: fixed;
+  background-size: cover;
   font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   line-height: 1.5;
 }
