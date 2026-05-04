@@ -1,0 +1,7 @@
+To ensure that our user passwords were stored safely, we hashed our passwords using the BCrypt BCryptPasswordEncoder.
+
+Only after they were hashed did we store the passwords to the database.
+
+In addition to that, when we checked if the right password was used on login, we did not use == due to the security 
+concerns surrounding that approach. Instead, we used BCrypt's BCryptPasswordEncoder().matches function to test the
+submitted password and confirm it was the correct one.

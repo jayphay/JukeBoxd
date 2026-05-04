@@ -133,7 +133,7 @@ public class AlbumController {
                 JOIN song s ON r.songId = s.songId
                 JOIN user u ON r.userId = u.userId
                 WHERE s.albumId = ?
-                ORDER BY r.songId DESC -- Or a timestamp column if your schema has one
+                ORDER BY r.songId DESC
                 LIMIT 10
                 """;
 

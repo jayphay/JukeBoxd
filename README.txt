@@ -18,7 +18,9 @@ popular singles, popular artists, and recent reviews to allow users to browse mu
 The Review Screen allowed users to create new reviews and view existing reviews, supporting
  basic review functionality and interaction within the application.
 
-Grant Moore:
+Grant Moore: Implemented the Song and Album view pages, controllers for each, and dynamic linking from every page to that
+album or song's details page. Wrote the queries to average out reviews for each song and the avg of all songs on an album.
+Also wrote the security.txt file
 
 Technologies: We used mysql.connector to populate the DB with data from a csv file that has lots of song data.
 We used bcrypt to hash passwords. We used thymeleaf for HTML templating and Spring JDBC to access the DB.
