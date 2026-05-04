@@ -215,3 +215,69 @@ JOIN user u ON r.userId = u.userId
 WHERE r.songId = ?
 ORDER BY r.userId DESC -- Placeholder for recency
 LIMIT 5
+
+-- gets the album, artist, and average rating for a song
+-- /api/songs/{songId}
+SELECT 
+    s.songId, s.title, s.genre, s.albumId, 
+    al.title AS albumTitle, 
+    ar.artist_name,
+    AVG(CAST(r.rating AS DECIMAL(3,1))) AS avgRating
+FROM song s
+JOIN artist ar ON s.artistId = ar.artistId
+LEFT JOIN album al ON s.albumId = al.albumId
+LEFT JOIN review r ON r.songId = s.songId
+WHERE s.songId = ?
+GROUP BY s.songId, s.title, s.genre, s.albumId, al.title, ar.artist_name
+
+-- gets reviews for a given song
+-- /api/songs/{songId}/reviews
+SELECT u.username, r.comment, r.rating
+FROM review r
+JOIN user u ON r.userId = u.userId
+WHERE r.songId = ?
+ORDER BY r.userId DESC -- Placeholder for recency
+LIMIT 5
+
+-- gets album info, artist info, and average rating for all the songs in the album
+-- /api/albums/{albumId}
+SELECT
+    al.albumId,
+    al.title,
+    ar.artist_name,
+    al.release_year,
+    AVG(CAST(r.rating AS DECIMAL(3,1))) AS avgRating
+FROM album al
+JOIN artist ar ON al.artistId = ar.artistId
+LEFT JOIN song s ON s.albumId = al.albumId
+LEFT JOIN review r ON r.songId = s.songId
+WHERE al.albumId = ?
+GROUP BY al.albumId, al.title, ar.artist_name, al.release_year
+
+-- gets the songs in the given album
+-- /api/albums/{albumId}/songs
+SELECT
+    s.songId,
+    s.title,
+    s.genre,
+    AVG(CAST(r.rating AS DECIMAL(3,1))) AS songAvg
+FROM song s
+LEFT JOIN review r ON s.songId = r.songId
+WHERE s.albumId = ?
+GROUP BY s.songId, s.title, s.genre
+ORDER BY s.title ASC
+
+-- gets the most recent reviews for the songs on the album
+-- /api/albums/{albumId}/reviews
+SELECT
+    u.username,
+    u.firstName,
+    s.title AS songTitle,
+    r.comment,
+    r.rating
+FROM review r
+JOIN song s ON r.songId = s.songId
+JOIN user u ON r.userId = u.userId
+WHERE s.albumId = ?
+ORDER BY r.songId DESC
+LIMIT 10
