@@ -7,7 +7,8 @@ that users associated profile page. Also implemented a button which added and re
 listen list page, and a listen list page which showed all the saved songs.
 
 Jack Phalen: Created the database and tables generated from the ER diagram and normalization. Made the script to populate
-the database as well as db_design.pdf. Added indices and compared the query times before and after adding them. 
+the database as well as db_design.pdf. Also made data.sql to have data to demonstrate project with.\
+Added indices and compared the query times before and after adding them. 
 
 James Shanks: Created the entire profile page, implemented the log in and log out feature, and made it so 
 the 'create review' feature updates the reviews in the database. Also created the edit review feature.

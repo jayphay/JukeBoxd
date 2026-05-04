@@ -50,7 +50,11 @@ create table if not exists review (
     foreign key (userId) references user(userId) on delete cascade
 );
 
-insert into user values (1, "dsmith", "$2a$10$0bdF8iScIvp2qvvaCSnKlO5o7KoqfzTltCcYi8Jvb2LSfh/NMy0hq", "Dean", "Smith"); -- dog
-insert into user values (2, "tom98", "$2a$10$ZYzDuH7WLvgf6NOSh2zMBO6ZguIO91aLqzN6WmdkqLaC7CGzHaNvG", "Tom", "Howard"); -- cat
-insert into user values (3, "pete", "$2a$10$klo6Ffk3EOfpOBfnJl1FDuU5e6uZX7x8RqHrTXxCXHFhzMMYAlqdm", "Peter", "Parker"); -- fish
+create index idx_song_title on song(title);
+create index idx_song_artistId on song(artistId);
+create index idx_album_title on album(title);
+create index idx_album_artistId on album(artistId);
+create index idx_artist_name on artist(artist_name);
+
+
 
