@@ -1,0 +1,45 @@
+Query: SELECT
+    a.albumId,
+    COALESCE(a.title, '') AS title,
+    ar.artist_name AS artistName,
+    a.release_year AS releaseYear,
+    COUNT(s.songId) AS songsCount
+FROM album a
+JOIN artist ar ON ar.artistId = a.artistId
+LEFT JOIN song s ON s.albumId = a.albumId
+GROUP BY a.albumId, a.title, ar.artist_name, a.release_year
+ORDER BY songsCount DESC, a.release_year DESC, a.title ASC
+LIMIT 10
+
+time before index: .02 sec
+time after index: .01 sec
+
+Query: SELECT
+    s.songId,
+    s.title,
+    ar.artist_name AS artistName,
+    COALESCE(a.title, '') AS albumTitle,
+    s.genre
+FROM song s
+JOIN artist ar ON ar.artistId = s.artistId
+LEFT JOIN album a ON a.albumId = s.albumId
+ORDER BY s.title ASC
+LIMIT 10
+
+time before index: .01 sec
+time after index: .00 sec
+
+Query: SELECT
+    ar.artistId,
+    ar.artist_name AS artistName,
+    COUNT(DISTINCT s.songId) AS songsCount,
+    COUNT(DISTINCT a.albumId) AS albumsCount
+FROM artist ar
+LEFT JOIN song s ON s.artistId = ar.artistId
+LEFT JOIN album a ON a.artistId = ar.artistId
+GROUP BY ar.artistId, ar.artist_name
+ORDER BY songsCount DESC, albumsCount DESC, ar.artist_name ASC
+LIMIT 12
+
+time before index: .02 sec
+time after index: .02 sec
